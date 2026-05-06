@@ -13,7 +13,8 @@ body {
 }
 
 .wrap {
-  max-width: 28rem;
+  width: 100%;
+  max-width: 100%;
   margin: 2.5rem auto;
   padding: 0 1.25rem;
 }

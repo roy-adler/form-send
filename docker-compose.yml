@@ -11,7 +11,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_SENDER: ${MAIL_SENDER}
       MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
-      # Where inbound mail is delivered (defaults to MAIL_SENDER if unset)
+      # Inbound addresses (comma/semicolon list; defaults to MAIL_SENDER if unset)
       MAIL_RECIPIENT: ${MAIL_RECIPIENT:-}
       # CSP frame-ancestors for embedding (default * in app if unset)
       FRAME_ANCESTORS: ${FRAME_ANCESTORS:-*}

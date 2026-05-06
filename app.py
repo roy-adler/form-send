@@ -22,6 +22,19 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return v.strip().lower() in ("1", "true", "yes", "on")
 
 
+def _mail_recipients() -> list[str]:
+    raw = os.environ.get("MAIL_RECIPIENT") or os.environ.get("MAIL_RECIPIENTS")
+    sender = os.environ["MAIL_SENDER"].strip()
+    if not raw or not raw.strip():
+        return [sender]
+    recipients: list[str] = []
+    for part in raw.replace(";", ",").split(","):
+        addr = part.strip()
+        if addr:
+            recipients.append(addr)
+    return recipients or [sender]
+
+
 app = Flask(__name__)
 _secret = os.environ.get("SECRET_KEY")
 if not _secret:
@@ -49,12 +62,12 @@ def _smtp_send(subject: str, body: str, reply_to: str | None) -> None:
     password = os.environ["MAIL_PASSWORD"]
     sender = os.environ["MAIL_SENDER"]
     use_tls = _env_bool("MAIL_USE_TLS", True)
-    recipient = os.environ.get("MAIL_RECIPIENT", sender).strip()
+    recipients = _mail_recipients()
 
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["From"] = sender
-    msg["To"] = recipient
+    msg["To"] = ", ".join(recipients)
     if reply_to:
         msg["Reply-To"] = reply_to
 

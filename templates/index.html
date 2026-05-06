@@ -12,18 +12,18 @@
       {% if error %}
         <p class="banner err" role="alert">{{ error }}</p>
       {% endif %}
-      <form method="post" action="{{ url_for('index') }}" novalidate>
+      <form method="post" action="{{ url_for('index') }}" class="contact-form">
         {{ form.hidden_tag() }}
         <label class="field">
           <span class="label">{{ form.name.label.text }}</span>
-          {{ form.name(class_="input", autocomplete="name", required=True) }}
+          {{ form.name(class_="input", autocomplete="name") }}
           {% for e in form.name.errors %}
             <span class="hint err">{{ e }}</span>
           {% endfor %}
         </label>
         <label class="field">
           <span class="label">{{ form.email.label.text }}</span>
-          {{ form.email(class_="input", autocomplete="email", type="email", required=True) }}
+          {{ form.email(class_="input", autocomplete="email", type="email", inputmode="email") }}
           {% for e in form.email.errors %}
             <span class="hint err">{{ e }}</span>
           {% endfor %}
@@ -31,12 +31,26 @@
         <label class="field">
           <span class="label">{{ form.message.label.text }}</span>
           {{ form.message(class_="input textarea", required=True) }}
+          <span id="message-hint" class="hint">At least 4 characters.</span>
           {% for e in form.message.errors %}
             <span class="hint err">{{ e }}</span>
           {% endfor %}
         </label>
-        <button type="submit" class="btn">Send</button>
+        <button type="submit" class="btn" id="send-btn" disabled>Send</button>
       </form>
+      <script>
+        (function () {
+          var form = document.querySelector(".contact-form");
+          var msg = form && form.querySelector('textarea[name="message"]');
+          var btn = document.getElementById("send-btn");
+          if (!form || !msg || !btn) return;
+          function sync() {
+            btn.disabled = msg.value.trim().length < 4;
+          }
+          msg.addEventListener("input", sync);
+          sync();
+        })();
+      </script>
     </main>
   </body>
 </html>

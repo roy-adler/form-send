@@ -46,10 +46,17 @@ h1 {
   font: inherit;
 }
 
-.input:focus {
-  outline: 2px solid #2563eb;
-  outline-offset: 1px;
-  border-color: #2563eb;
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background: #94a3b8;
 }
 
 .textarea {
@@ -100,6 +107,7 @@ h1 {
   display: block;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+  color: #64748b;
 }
 
 .hint.err {

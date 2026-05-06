@@ -8,7 +8,7 @@ from flask import Flask, redirect, render_template, url_for
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, Optional
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from dotenv import load_dotenv
@@ -109,9 +109,21 @@ def security_headers(response):
 
 
 class ContactForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired(), Length(max=200)])
-    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=320)])
-    message = TextAreaField("Message", validators=[DataRequired(), Length(max=20000)])
+    name = StringField(
+        "Name",
+        validators=[Optional(), Length(max=200)],
+        render_kw={"placeholder": "Anonymus"},
+    )
+    email = StringField(
+        "Email",
+        validators=[Optional(), Email(), Length(max=320)],
+        render_kw={"placeholder": "Anonymus"},
+    )
+    message = TextAreaField(
+        "Message",
+        validators=[DataRequired(), Length(min=4, max=20000)],
+        render_kw={"minlength": "4", "aria-describedby": "message-hint"},
+    )
 
 
 @app.get("/health")
@@ -123,20 +135,26 @@ def health():
 def index():
     form = ContactForm()
     if form.validate_on_submit():
-        name = form.name.data.strip()
-        email = form.email.data.strip()
-        message = form.message.data.strip()
+        raw_name = (form.name.data or "").strip()
+        raw_email = (form.email.data or "").strip()
+        message = (form.message.data or "").strip()
+        name = raw_name or "Anonymus"
         subject = "New contact form message"
         body = (
             f"Name: {name}\n"
-            f"Email: {email}\n\n"
+            f"Email: {raw_email or '(not provided)'}\n\n"
             f"{message}\n"
         )
         try:
+            reply_to = (
+                formataddr((name, raw_email))
+                if raw_email
+                else None
+            )
             _smtp_send(
                 subject=subject,
                 body=body,
-                reply_to=formataddr((name, email)) if name else email,
+                reply_to=reply_to,
             )
         except Exception as exc:  # noqa: BLE001
             app.logger.exception("Failed to send mail: %s", exc)

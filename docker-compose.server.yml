@@ -1,0 +1,37 @@
+# Server: use next to ../../environments/form-send.env (adjust paths if needed).
+# After editing: docker compose -f docker-compose.server.yml up -d --force-recreate
+#
+# If it still 404s, on the server run:
+#   docker inspect form-send --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+# You must see: deployment-infrastructure_default
+#   docker logs traefik 2>&1 | tail -80
+
+services:
+  web:
+    image: ghcr.io/roy-adler/form-send:latest
+    container_name: form-send
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../../environments/form-send.env
+    networks:
+      - traefik_edge
+    labels:
+      - "traefik.enable=true"
+      # Tell Traefik which network to use to reach this container (needed with multiple networks)
+      - "traefik.docker.network=deployment-infrastructure_default"
+      - "traefik.http.routers.form-send.rule=Host(`form-send.royadler.de`) || Host(`form-send.royadler.com`)"
+      - "traefik.http.routers.form-send.entrypoints=websecure"
+      - "traefik.http.routers.form-send.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.form-send.service=form-send"
+      - "traefik.http.services.form-send.loadbalancer.server.port=8000"
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "dockinfo.enable=true"
+      - "dockinfo.service.name=Form Send"
+      - "dockinfo.application.url=https://form-send.royadler.de"
+      - "dockinfo.github.url=https://github.com/roy-adler/form-send"
+
+networks:
+  traefik_edge:
+    external: true
+    name: deployment-infrastructure_default

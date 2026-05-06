@@ -17,6 +17,8 @@ services:
       MAIL_RECIPIENT: ${MAIL_RECIPIENT:-}
       # CSP frame-ancestors for embedding (default * in app if unset)
       FRAME_ANCESTORS: ${FRAME_ANCESTORS:-*}
+      # false = hide form on direct host URL; iframe embeds still work
+      ALLOW_HOST_LANDING_PAGE: ${ALLOW_HOST_LANDING_PAGE:-true}
       SESSION_COOKIE_SAMESITE: ${SESSION_COOKIE_SAMESITE:-Lax}
       SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
     restart: unless-stopped

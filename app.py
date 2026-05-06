@@ -4,7 +4,7 @@ import ssl
 from email.message import EmailMessage
 from email.utils import formataddr
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField
@@ -106,6 +106,15 @@ def _show_contact_heading() -> bool:
     return (request.headers.get("Sec-Fetch-Dest") or "").lower() != "iframe"
 
 
+def _embedded_request() -> bool:
+    return not _show_contact_heading()
+
+
+def _allow_host_landing_page() -> bool:
+    """If False, GET / as a top-level page shows no form (iframe embeds still work)."""
+    return _env_bool("ALLOW_HOST_LANDING_PAGE", True)
+
+
 @app.after_request
 def security_headers(response):
     raw = os.environ.get("FRAME_ANCESTORS")
@@ -140,8 +149,19 @@ def health():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    allow_host = _allow_host_landing_page()
+    embedded = _embedded_request()
+
+    if request.method == "GET":
+        if not allow_host and not embedded:
+            session.pop("form_surface", None)
+            return render_template("host_landing_disabled.html"), 403
+        session["form_surface"] = "embed" if embedded else "direct"
+
     form = ContactForm()
     if form.validate_on_submit():
+        if not allow_host and session.get("form_surface") != "embed":
+            return render_template("host_landing_disabled.html"), 403
         raw_name = (form.name.data or "").strip()
         raw_email = (form.email.data or "").strip()
         message = (form.message.data or "").strip()

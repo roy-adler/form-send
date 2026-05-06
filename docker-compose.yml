@@ -4,6 +4,8 @@ services:
     ports:
       - "8000:8000"
     environment:
+      # Set true when TLS terminates at a reverse proxy (Traefik, Caddy, nginx)
+      TRUST_PROXY: ${TRUST_PROXY:-true}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       MAIL_SERVER: ${MAIL_SERVER}
       MAIL_PORT: ${MAIL_PORT:-587}

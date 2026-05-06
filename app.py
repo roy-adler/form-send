@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from dotenv import load_dotenv
 
@@ -53,6 +54,16 @@ else:
 app.config["SESSION_COOKIE_SAMESITE"] = _samesite
 app.config["SESSION_COOKIE_SECURE"] = _env_bool("SESSION_COOKIE_SECURE", False)
 csrf = CSRFProtect(app)
+
+if _env_bool("TRUST_PROXY", False):
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=1,
+        x_proto=1,
+        x_host=1,
+        x_port=1,
+        x_prefix=1,
+    )
 
 
 def _smtp_send(subject: str, body: str, reply_to: str | None) -> None:

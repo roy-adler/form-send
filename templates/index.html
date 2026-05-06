@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
-    <main class="wrap">
-      <h1>Contact</h1>
+    <main class="wrap {% if not show_contact_heading %}wrap-embed{% endif %}">
+      {% if show_contact_heading %}
+        <h1>Contact</h1>
+      {% endif %}
       {% if error %}
         <p class="banner err" role="alert">{{ error }}</p>
       {% endif %}

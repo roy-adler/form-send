@@ -24,6 +24,10 @@ h1 {
   margin: 0 0 1rem;
 }
 
+.wrap.wrap-embed {
+  margin-top: 1rem;
+}
+
 .field {
   display: block;
   margin-bottom: 1rem;

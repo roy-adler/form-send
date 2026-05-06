@@ -4,7 +4,7 @@ import ssl
 from email.message import EmailMessage
 from email.utils import formataddr
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField
@@ -99,6 +99,13 @@ def _smtp_send(subject: str, body: str, reply_to: str | None) -> None:
         server.send_message(msg)
 
 
+def _show_contact_heading() -> bool:
+    """Hide the main 'Contact' title in iframes; keep it on direct visits to the site."""
+    if request.args.get("embed", "").lower() in ("1", "true", "yes"):
+        return False
+    return (request.headers.get("Sec-Fetch-Dest") or "").lower() != "iframe"
+
+
 @app.after_request
 def security_headers(response):
     raw = os.environ.get("FRAME_ANCESTORS")
@@ -158,10 +165,20 @@ def index():
             )
         except Exception as exc:  # noqa: BLE001
             app.logger.exception("Failed to send mail: %s", exc)
-            return render_template("index.html", form=form, error="Could not send email. Try again later."), 502
+            return render_template(
+                "index.html",
+                form=form,
+                error="Could not send email. Try again later.",
+                show_contact_heading=_show_contact_heading(),
+            ), 502
         return redirect(url_for("thanks"), code=303)
 
-    return render_template("index.html", form=form, error=None)
+    return render_template(
+        "index.html",
+        form=form,
+        error=None,
+        show_contact_heading=_show_contact_heading(),
+    )
 
 
 @app.get("/thanks")

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Contact</h1>
+      {% if error %}
+        <p class="banner err" role="alert">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="{{ url_for('index') }}" novalidate>
+        {{ form.hidden_tag() }}
+        <label class="field">
+          <span class="label">{{ form.name.label.text }}</span>
+          {{ form.name(class_="input", autocomplete="name", required=True) }}
+          {% for e in form.name.errors %}
+            <span class="hint err">{{ e }}</span>
+          {% endfor %}
+        </label>
+        <label class="field">
+          <span class="label">{{ form.email.label.text }}</span>
+          {{ form.email(class_="input", autocomplete="email", type="email", required=True) }}
+          {% for e in form.email.errors %}
+            <span class="hint err">{{ e }}</span>
+          {% endfor %}
+        </label>
+        <label class="field">
+          <span class="label">{{ form.message.label.text }}</span>
+          {{ form.message(class_="input textarea", required=True) }}
+          {% for e in form.message.errors %}
+            <span class="hint err">{{ e }}</span>
+          {% endfor %}
+        </label>
+        <button type="submit" class="btn">Send</button>
+      </form>
+    </main>
+  </body>
+</html>

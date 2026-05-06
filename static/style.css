@@ -50,6 +50,12 @@ h1 {
   color: #94a3b8;
 }
 
+.input:focus {
+  outline: 2px solid #ed2b5f;
+  outline-offset: 1px;
+  border-color: #ed2b5f;
+}
+
 .btn:disabled {
   background: #94a3b8;
   cursor: not-allowed;
@@ -72,16 +78,16 @@ h1 {
   font: inherit;
   font-weight: 600;
   color: #fff;
-  background: #2563eb;
+  background: #ed2b5f;
   cursor: pointer;
 }
 
 .btn:hover {
-  background: #1d4ed8;
+  background: #d61f54;
 }
 
 .btn:focus-visible {
-  outline: 2px solid #1e3a8a;
+  outline: 2px solid #9a1b43;
   outline-offset: 2px;
 }
 
@@ -115,7 +121,7 @@ h1 {
 }
 
 a {
-  color: #2563eb;
+  color: #ed2b5f;
 }
 
 a:hover {

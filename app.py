@@ -166,7 +166,7 @@ def index():
         raw_email = (form.email.data or "").strip()
         message = (form.message.data or "").strip()
         name = raw_name or "Anonymus"
-        subject = "New contact form message"
+        subject = os.environ.get("MAIL_SUBJECT", "").strip() or "New contact form message"
         body = (
             f"Name: {name}\n"
             f"Email: {raw_email or '(not provided)'}\n\n"

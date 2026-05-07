@@ -12,6 +12,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_SENDER: ${MAIL_SENDER}
+      MAIL_SUBJECT: ${MAIL_SUBJECT:-}
       MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
       # Inbound addresses (comma/semicolon list; defaults to MAIL_SENDER if unset)
       MAIL_RECIPIENT: ${MAIL_RECIPIENT:-}
